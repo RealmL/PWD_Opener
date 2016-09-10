@@ -21,6 +21,7 @@ bool ForceSweep =0;   //内部动作标志位
 int PWD[PWD_LEN]={2,1,3,4};   //密码数组
 int INPT[PWD_LEN]={0};    //输入数组
 int TryTimes = 0;   //尝试次数
+int RelayPin = 8; //继电器信号引脚
 //************************************
 
 //********引脚设置****************
@@ -53,6 +54,14 @@ void InnerClickDown()
     ForceSweep =1;
 }
 
+
+//将Sweep改为Pulse动作(由PWD波改为一段时间的低电压),执行一次Pulse即开门
+void Pulse()
+{
+  digitalWrite(RelayPin,LOW);
+  delay(500);
+  digitalWrite(RelayPin,HIGH);
+}
 
 //执行一次Sweep即可开门
 void Sweep()
@@ -104,7 +113,7 @@ void Check()
     if(INPT[0]==PWD[0]&&INPT[1]==PWD[1]&&INPT[2]==PWD[2]&&INPT[3]==PWD[3])   
       {
         //密码正确
-        Sweep(); //开门
+        Pulse(); //开门
         TryTimes = 0;   //错误计数器清零
       }
      else
@@ -154,6 +163,8 @@ void setup() {
   pinMode(btC,INPUT_PULLUP);
   pinMode(btD,INPUT_PULLUP);
   pinMode(InnerButton,INPUT_PULLUP);//内部按钮上拉
+  pinMode(RelayPin,OUTPUT); 
+  digitalWrite(RelayPin,HIGH); //继电器引脚默认上拉
   myservo.attach(9); //舵机引脚
   // Open serial communications and wait for port to open:
   Serial.begin(9600);
@@ -172,7 +183,7 @@ void loop()
 
   if(ForceSweep==1)
     {
-      Sweep();
+      Pulse();
       ForceSweep = 0;
       InnerDownTimes = 0;
     }
