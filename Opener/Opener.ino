@@ -8,6 +8,8 @@
 #define PWD_LEN 4   //密码长度
 #define LED_DELAY 150   //LED闪烁间隔
 #define TRY_LIMIT 3   //密码尝试次数限制
+#define RELAY_ON HIGH  //继电器打开标志
+#define RELAY_OFF LOW //继电器关闭标志
 
 //************数据设置****************
 bool WaitForCheck = 0;  //外部持续监测标志位
@@ -58,9 +60,9 @@ void InnerClickDown()
 //将Sweep改为Pulse动作(由PWD波改为一段时间的低电压),执行一次Pulse即开门
 void Pulse()
 {
-  digitalWrite(RelayPin,LOW);
+  digitalWrite(RelayPin,RELAY_ON); //打开
   delay(500);
-  digitalWrite(RelayPin,HIGH);
+  digitalWrite(RelayPin,RELAY_OFF);
 }
 
 //执行一次Sweep即可开门
@@ -164,7 +166,7 @@ void setup() {
   pinMode(btD,INPUT_PULLUP);
   pinMode(InnerButton,INPUT_PULLUP);//内部按钮上拉
   pinMode(RelayPin,OUTPUT); 
-  digitalWrite(RelayPin,HIGH); //继电器引脚默认上拉
+  digitalWrite(RelayPin,RELAY_OFF); //继电器默认关闭
   myservo.attach(9); //舵机引脚
   // Open serial communications and wait for port to open:
   Serial.begin(9600);
